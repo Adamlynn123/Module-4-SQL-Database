@@ -18,6 +18,7 @@ def main():
 
         display_all_characters()
 
+        # Getting the choice from the user with what they want to do
         choice = int(input("What would you like to do with the program? \n\
         Add a character(1)\n\
         Remove a character(2)\n\
@@ -34,7 +35,10 @@ def main():
             display_certain_characters()
         elif choice == 4:
             update_character() 
+        else:
+            print("Invalid choice. Please try again.")
         
+        # Break out of the while loop if the user enters 0
         keep_going = int(input("Do you want to continue? Continue (1) Stop(0): "))
         if keep_going == 0: 
             break
@@ -51,14 +55,17 @@ def add_new_character():
     print("Character successfully added")
 
 def remove_character():
-    character_name = input("What character would you like to remove?: ")
-    if cur.execute("DELETE from characters WHERE name = (?)", (character_name,)):
+
+    # Choosing character via their ID# on the leftmost column
+    row_id = input("What character would you like to remove? (ID#): ")
+    if cur.execute("DELETE from characters WHERE rowid = (?)", (row_id,)):
         print("Character successfully deleted!")
     else: 
         print("Invalid character name")
 
 def display_all_characters():
 
+        # Grab the characters in the table and display them using formatting and a for loop
         cur.execute("SELECT rowid, * FROM characters")
         characters = cur.fetchall()
         print("")
@@ -68,11 +75,13 @@ def display_all_characters():
             print(str(character[0]) + "\t" + character[1] + "\t" + str(character[2]) + "\t" + str(character[3]))
 
 def display_certain_characters():
-    sort_type = int(input("What do you want to sort by? Age(1), Rank(2): "))
+
+    # User chooses how they want to filter the characters
+    sort_type = int(input("What do you want to filter by? Age(1), Rank(2): "))
 
     #Sorting by the age
     if sort_type == 1:
-        age_choice = int(input("What age would you like to choose?: "))
+        age_choice = int(input("What is the minimum age to display?: "))
         cur.execute("SELECT rowid, * FROM characters WHERE age >= (?)", (age_choice,))
         characters = cur.fetchall()
         print("-----" + "\t" + "-----" + "\t" + "-----" + "\t" + "-----")
@@ -82,7 +91,7 @@ def display_certain_characters():
 
     #Sorting by the rank
     elif sort_type == 2:
-        rank_choice = int(input("What rank would you like to choose?: "))
+        rank_choice = int(input("What is the minimum rank to display?: "))
         cur.execute("SELECT rowid, * FROM characters WHERE rank >= (?)", (rank_choice,))
         characters = cur.fetchall()
         print("-----" + "\t" + "-----" + "\t" + "-----" + "\t" + "-----")
@@ -120,5 +129,6 @@ def update_character():
 if __name__ == "__main__":
     main()
 
+# Commit changes and close the database
 con.commit()
 con.close()
